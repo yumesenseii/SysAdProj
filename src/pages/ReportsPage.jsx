@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
 import { Download, FileText, CheckCircle2 } from 'lucide-react';
 import Button from '../components/Button';
+import { useAuth } from '../context/useAuth';
 
 export function ReportsPage() {
+  const { currentUser, isTeacher } = useAuth();
   const [downloadingId, setDownloadingId] = useState(null);
   const [downloadSuccessMessage, setDownloadSuccessMessage] = useState('');
 
-  const reportList = [
+  const allReports = [
     {
       id: 'REP-001',
       title: 'School Form 1 (SF-1) School Register',
       category: 'DepEd Official',
       format: 'XLSX / PDF',
-      description: 'Master list of enrolled students by section with demographic profiles, LRNs, and parent contact information.',
+      description: isTeacher
+        ? `Official DepEd learner register for ${currentUser?.assignedGrade || 'Grade 7'} – ${currentUser?.assignedSection || 'Ramon'} (45 learners).`
+        : 'Master list of enrolled students by section with demographic profiles, LRNs, and parent contact information.',
       lastGenerated: 'Today, 14:30',
     },
     {
@@ -20,8 +24,18 @@ export function ReportsPage() {
       title: 'School Form 2 (SF-2) Monthly Learner Attendance',
       category: 'DepEd Official',
       format: 'XLSX',
-      description: 'Monthly summary of daily attendance per grade level and section in compliance with DepEd reporting standards.',
+      description: isTeacher
+        ? `Monthly learner attendance report for ${currentUser?.assignedGrade || 'Grade 7'} – ${currentUser?.assignedSection || 'Ramon'}.`
+        : 'Monthly summary of daily attendance per grade level and section in compliance with DepEd reporting standards.',
       lastGenerated: 'Yesterday, 17:15',
+    },
+    {
+      id: 'REP-007',
+      title: 'Form 138 / SF-9 Learner Progress Report Cards',
+      category: 'DepEd Official',
+      format: 'PDF (Print Ready)',
+      description: 'Quarterly academic grades, core values ratings, and attendance records per learner for parent distribution.',
+      lastGenerated: 'Today, 08:00',
     },
     {
       id: 'REP-003',
@@ -46,6 +60,7 @@ export function ReportsPage() {
       format: 'CSV',
       description: 'Complete chronological audit log of user logins, role permissions modifications, and administration events.',
       lastGenerated: 'Today, 20:30',
+      adminOnly: true,
     },
     {
       id: 'REP-006',
@@ -54,8 +69,14 @@ export function ReportsPage() {
       format: 'JSON / PDF',
       description: 'Verification checksums, snapshot file sizes, server uptime statistics, and storage utilization records.',
       lastGenerated: 'Today, 03:00',
+      adminOnly: true,
     },
   ];
+
+  const reportList = allReports.filter((r) => {
+    if (isTeacher && r.adminOnly) return false;
+    return true;
+  });
 
   const handleExport = (report) => {
     setDownloadingId(report.id);

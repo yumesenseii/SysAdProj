@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { Upload, CheckCircle2, Eye } from 'lucide-react';
+import { Upload, CheckCircle2, Eye, UserCheck } from 'lucide-react';
 import DataTable from '../components/DataTable';
 import StatusBadge from '../components/StatusBadge';
 import Button from '../components/Button';
 import Modal from '../components/Modal';
+import { useAuth } from '../context/useAuth';
 
 export function RecordsPage() {
+  const { currentUser, isTeacher } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [gradeFilter, setGradeFilter] = useState('ALL');
+  const [onlyMyRecords, setOnlyMyRecords] = useState(isTeacher);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [viewingRecord, setViewingRecord] = useState(null);
   const [uploadSuccess, setUploadSuccess] = useState(false);
@@ -89,7 +92,15 @@ export function RecordsPage() {
       r.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
       r.teacher.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesGrade = gradeFilter === 'ALL' || r.grade === gradeFilter;
-    return matchesSearch && matchesGrade;
+
+    let matchesTeacher = true;
+    if (onlyMyRecords && isTeacher) {
+      matchesTeacher =
+        r.teacher.toLowerCase().includes(currentUser.name.toLowerCase().split(' ').slice(-1)[0]) ||
+        (currentUser.assignedSection && r.section.toLowerCase().includes(currentUser.assignedSection.toLowerCase()));
+    }
+
+    return matchesSearch && matchesGrade && matchesTeacher;
   });
 
   const handleUploadSubmit = (e) => {
@@ -178,6 +189,15 @@ export function RecordsPage() {
           </p>
         </div>
         <div className="page-header-actions">
+          {isTeacher && (
+            <Button
+              variant={onlyMyRecords ? 'primary' : 'secondary'}
+              icon={UserCheck}
+              onClick={() => setOnlyMyRecords(!onlyMyRecords)}
+            >
+              {onlyMyRecords ? 'Showing: My Classes Only' : 'Show All School Classes'}
+            </Button>
+          )}
           <Button
             variant="primary"
             icon={Upload}

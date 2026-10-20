@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
+import { useAuth } from '../context/useAuth';
 
-const titlesMap = {
+const adminTitlesMap = {
   '/admin': { title: 'Dashboard', subtitle: 'System overview, status monitoring, and key metrics' },
   '/admin/users': { title: 'User Management', subtitle: 'Manage school faculty, administration, and learner accounts' },
   '/admin/classes': { title: 'Classes & Sections', subtitle: 'Grade level sections, room assignments, and class advisers' },
@@ -14,12 +15,23 @@ const titlesMap = {
   '/admin/settings': { title: 'Settings', subtitle: 'School parameters, account security, and system configuration' },
 };
 
+const teacherTitlesMap = {
+  '/admin': { title: 'Teacher Dashboard', subtitle: 'Advisory section summary, daily attendance, and subject grade progress' },
+  '/admin/classes': { title: 'My Advisory Class', subtitle: 'Grade 7 – Ramon learners roster, parent contacts, and room info' },
+  '/admin/records': { title: 'Subject Records & Grades', subtitle: 'Electronic Class Record (ECR) encoding and quarterly submissions' },
+  '/admin/attendance': { title: 'Daily Attendance', subtitle: 'Learner daily attendance sheet and DepEd SF-2 monthly logs' },
+  '/admin/reports': { title: 'Class Forms & Reports', subtitle: 'DepEd School Forms SF-1, SF-2, and SF-9 learner progress cards' },
+  '/admin/settings': { title: 'Faculty Profile', subtitle: 'Teacher credentials, department designation, and password security' },
+};
+
 export function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const { isTeacher } = useAuth();
 
-  const currentMeta = titlesMap[location.pathname] || {
-    title: 'Admin Console',
+  const activeMap = isTeacher ? teacherTitlesMap : adminTitlesMap;
+  const currentMeta = activeMap[location.pathname] || {
+    title: isTeacher ? 'Faculty Portal' : 'Admin Console',
     subtitle: 'Cambaog National High School Administration System',
   };
 
@@ -41,3 +53,4 @@ export function AdminLayout() {
 }
 
 export default AdminLayout;
+

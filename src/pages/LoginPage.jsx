@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Lock, Mail, ArrowLeft, ShieldCheck } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, ArrowLeft, ShieldCheck, GraduationCap, Shield } from 'lucide-react';
 import SchoolLogo from '../components/SchoolLogo';
-import { SCHOOL_INFO } from '../data/mockData';
+import { SCHOOL_INFO, DEMO_ACCOUNTS } from '../data/mockData';
+import { useAuth } from '../context/useAuth';
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const { loginWithCredentials } = useAuth();
+  const [selectedRole, setSelectedRole] = useState('admin');
   const [email, setEmail] = useState('admin@cnhs.edu.ph');
   const [password, setPassword] = useState('password123');
   const [showPassword, setShowPassword] = useState(false);
@@ -14,15 +17,19 @@ export function LoginPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate instantaneous static admin transition
+    loginWithCredentials(email, password);
     setTimeout(() => {
       navigate('/admin');
-    }, 400);
+    }, 350);
   };
 
-  const handleUseDemoCreds = () => {
-    setEmail('admin@cnhs.edu.ph');
-    setPassword('password123');
+  const handleSelectDemoRole = (roleKey) => {
+    setSelectedRole(roleKey);
+    const account = DEMO_ACCOUNTS[roleKey];
+    if (account) {
+      setEmail(account.email);
+      setPassword('password123');
+    }
   };
 
   return (
@@ -34,31 +41,87 @@ export function LoginPage() {
             <SchoolLogo size={58} />
           </div>
           <h2>Welcome Back</h2>
-          <p>CNHS Learn — System Administration Portal</p>
+          <p>CNHS Learn — School Administration Portal</p>
           <div style={{ fontSize: '11.5px', color: '#14532d', fontWeight: 600, marginTop: '4px' }}>
             {SCHOOL_INFO.name} (ID: {SCHOOL_INFO.schoolId})
           </div>
         </div>
 
-        {/* Demo Credentials Box */}
+        {/* Demo Credentials Switcher Box */}
         <div className="login-demo-notice">
           <div className="login-demo-title">
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <ShieldCheck size={16} />
-              <span>Static Demo Account</span>
+              <span>Select Demo Account Role</span>
             </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', margin: '8px 0 10px 0' }}>
             <button
               type="button"
-              onClick={handleUseDemoCreds}
-              style={{ fontSize: '11px', color: '#166534', textDecoration: 'underline', fontWeight: 600 }}
+              onClick={() => handleSelectDemoRole('admin')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 8px',
+                borderRadius: '6px',
+                border: selectedRole === 'admin' ? '2px solid #166534' : '1px solid #cbd5e1',
+                backgroundColor: selectedRole === 'admin' ? '#f0fdf4' : '#ffffff',
+                color: selectedRole === 'admin' ? '#14532d' : '#475569',
+                cursor: 'pointer',
+                fontWeight: 600,
+                fontSize: '11.5px',
+                textAlign: 'left',
+              }}
             >
-              Autofill
+              <Shield size={14} style={{ color: selectedRole === 'admin' ? '#166534' : '#64748b', flexShrink: 0 }} />
+              <div>
+                <div>Principal / Admin</div>
+                <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 400 }}>Full access</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleSelectDemoRole('teacher')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 8px',
+                borderRadius: '6px',
+                border: selectedRole === 'teacher' ? '2px solid #1d4ed8' : '1px solid #cbd5e1',
+                backgroundColor: selectedRole === 'teacher' ? '#eff6ff' : '#ffffff',
+                color: selectedRole === 'teacher' ? '#1d4ed8' : '#475569',
+                cursor: 'pointer',
+                fontWeight: 600,
+                fontSize: '11.5px',
+                textAlign: 'left',
+              }}
+            >
+              <GraduationCap size={14} style={{ color: selectedRole === 'teacher' ? '#1d4ed8' : '#64748b', flexShrink: 0 }} />
+              <div>
+                <div>Teacher / Adviser</div>
+                <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 400 }}>Grade 7 - Ramon</div>
+              </div>
             </button>
           </div>
-          <div className="login-demo-creds">
-            <strong>Role:</strong> School Principal / Administrator (Juan dela Cruz)<br />
-            <strong>Email:</strong> admin@cnhs.edu.ph<br />
-            <strong>Password:</strong> password123
+
+          <div className="login-demo-creds" style={{ fontSize: '11.5px', lineHeight: 1.45 }}>
+            {selectedRole === 'admin' ? (
+              <>
+                <strong>Role:</strong> School Principal (Juan dela Cruz)<br />
+                <strong>Email:</strong> admin@cnhs.edu.ph<br />
+                <strong>Access:</strong> Full school & system administration
+              </>
+            ) : (
+              <>
+                <strong>Role:</strong> Faculty & Class Adviser (Mrs. Evelyn Bautista)<br />
+                <strong>Email:</strong> e.bautista@cnhs.edu.ph<br />
+                <strong>Access:</strong> Grade 7 – Ramon, Attendance & Subject Grading
+              </>
+            )}
           </div>
         </div>
 

@@ -7,12 +7,15 @@ import {
   Save,
   CheckCircle2,
   RefreshCw,
+  GraduationCap,
 } from 'lucide-react';
 import Button from '../components/Button';
 import StatusBadge from '../components/StatusBadge';
 import { SCHOOL_INFO } from '../data/mockData';
+import { useAuth } from '../context/useAuth';
 
-export function SettingsPage() {
+function SettingsPageContent() {
+  const { currentUser, isTeacher } = useAuth();
   const [saveToast, setSaveToast] = useState('');
   const [isBackingUp, setIsBackingUp] = useState(false);
   const [backupSuccess, setBackupSuccess] = useState(false);
@@ -31,9 +34,9 @@ export function SettingsPage() {
   });
 
   const [accountData, setAccountData] = useState({
-    name: 'Juan dela Cruz',
-    email: 'admin@cnhs.edu.ph',
-    role: 'School Principal',
+    name: currentUser?.name || 'Juan dela Cruz',
+    email: currentUser?.email || 'admin@cnhs.edu.ph',
+    role: currentUser?.roleTitle || 'School Principal',
     currentPassword: '',
     newPassword: '',
   });
@@ -228,12 +231,12 @@ export function SettingsPage() {
           </div>
         </div>
 
-        {/* Section 2: Principal Account & Security */}
+        {/* Section 2: Account & Security */}
         <div className="admin-card" style={{ marginBottom: 0 }}>
           <div className="admin-card-header">
             <div className="admin-card-title">
-              <User size={18} />
-              <span>School Principal Account & Security</span>
+              {isTeacher ? <GraduationCap size={18} /> : <User size={18} />}
+              <span>{isTeacher ? 'Faculty Account & Profile Security' : 'School Principal Account & Security'}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div
@@ -241,7 +244,7 @@ export function SettingsPage() {
                   width: '26px',
                   height: '26px',
                   borderRadius: '50%',
-                  backgroundColor: '#0f3e2e',
+                  backgroundColor: isTeacher ? '#1d4ed8' : '#0f3e2e',
                   color: '#ffffff',
                   display: 'flex',
                   alignItems: 'center',
@@ -250,18 +253,51 @@ export function SettingsPage() {
                   fontWeight: 700,
                 }}
               >
-                JC
+                {currentUser?.avatar || 'JC'}
               </div>
               <span style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>
                 {accountData.name}
               </span>
-              <StatusBadge role="Admin" />
+              <StatusBadge role={currentUser?.role || 'Admin'} />
             </div>
           </div>
           <div className="admin-card-body">
+            {isTeacher && (
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, 1fr)',
+                  gap: '12px',
+                  padding: '12px 14px',
+                  borderRadius: '8px',
+                  backgroundColor: '#eff6ff',
+                  border: '1px solid #bfdbfe',
+                  marginBottom: '16px',
+                  fontSize: '12px',
+                }}
+              >
+                <div>
+                  <span style={{ color: '#1e40af', fontWeight: 600 }}>Department:</span>
+                  <div style={{ color: '#0f172a', fontWeight: 500 }}>{currentUser.department}</div>
+                </div>
+                <div>
+                  <span style={{ color: '#1e40af', fontWeight: 600 }}>Advisory Section:</span>
+                  <div style={{ color: '#0f172a', fontWeight: 500 }}>
+                    {currentUser.assignedGrade} – {currentUser.assignedSection} ({currentUser.assignedRoom})
+                  </div>
+                </div>
+                <div>
+                  <span style={{ color: '#1e40af', fontWeight: 600 }}>Assigned Subjects:</span>
+                  <div style={{ color: '#0f172a', fontWeight: 500 }}>
+                    {currentUser.subjects?.join(', ') || 'English 7'}
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="form-row-2">
               <div className="form-group">
-                <label className="form-label">Principal Full Name</label>
+                <label className="form-label">{isTeacher ? 'Faculty Full Name' : 'Principal Full Name'}</label>
                 <input
                   type="text"
                   className="form-input"
@@ -271,7 +307,7 @@ export function SettingsPage() {
                 />
               </div>
               <div className="form-group">
-                <label className="form-label">Administrator Login Email</label>
+                <label className="form-label">{isTeacher ? 'DepEd Faculty Email' : 'Administrator Login Email'}</label>
                 <input
                   type="email"
                   className="form-input"
@@ -462,6 +498,11 @@ export function SettingsPage() {
       </form>
     </div>
   );
+}
+
+export function SettingsPage() {
+  const { currentUser } = useAuth();
+  return <SettingsPageContent key={currentUser?.id || 'default'} />;
 }
 
 export default SettingsPage;

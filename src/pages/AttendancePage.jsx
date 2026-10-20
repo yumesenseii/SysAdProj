@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { Download, CheckCircle2 } from 'lucide-react';
+import { Download, CheckCircle2, UserCheck } from 'lucide-react';
 import DataTable from '../components/DataTable';
 import StatusBadge from '../components/StatusBadge';
 import Button from '../components/Button';
+import { useAuth } from '../context/useAuth';
 
 export function AttendancePage() {
+  const { currentUser, isTeacher } = useAuth();
   const [gradeFilter, setGradeFilter] = useState('ALL');
+  const [onlyMySection, setOnlyMySection] = useState(isTeacher);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
 
   const attendanceData = [
@@ -77,9 +80,16 @@ export function AttendancePage() {
     },
   ];
 
-  const filteredData = attendanceData.filter(
-    (item) => gradeFilter === 'ALL' || item.grade === gradeFilter
-  );
+  const filteredData = attendanceData.filter((item) => {
+    const matchesGrade = gradeFilter === 'ALL' || item.grade === gradeFilter;
+    let matchesTeacher = true;
+    if (onlyMySection && isTeacher) {
+      matchesTeacher =
+        item.adviser.toLowerCase().includes(currentUser.name.toLowerCase().split(' ').slice(-1)[0]) ||
+        (currentUser.assignedSection && item.section.toLowerCase().includes(currentUser.assignedSection.toLowerCase()));
+    }
+    return matchesGrade && matchesTeacher;
+  });
 
   const handleExportSF2 = () => {
     setDownloadSuccess(true);
@@ -149,6 +159,15 @@ export function AttendancePage() {
           </p>
         </div>
         <div className="page-header-actions">
+          {isTeacher && (
+            <Button
+              variant={onlyMySection ? 'primary' : 'secondary'}
+              icon={UserCheck}
+              onClick={() => setOnlyMySection(!onlyMySection)}
+            >
+              {onlyMySection ? `Showing: My Section (${currentUser.assignedSection || 'Ramon'})` : 'Show All School Sections'}
+            </Button>
+          )}
           <Button
             variant="primary"
             icon={Download}

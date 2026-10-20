@@ -450,3 +450,62 @@ export const SYSTEM_LOGS = [
     ip: "127.0.0.1",
   },
 ];
+
+export const DEMO_ACCOUNTS = {
+  admin: {
+    id: "USR-001",
+    name: "Juan dela Cruz",
+    role: "Admin",
+    roleTitle: "School Principal",
+    email: "admin@cnhs.edu.ph",
+    department: "System Administration & School Head",
+    avatar: "JC",
+    assignedGrade: null,
+    assignedSection: null,
+    assignedRoom: "Principal's Office - Admin Bldg",
+    totalLearners: null,
+    subjects: [],
+  },
+  teacher: {
+    id: "USR-003",
+    name: "Mrs. Evelyn Bautista",
+    role: "Teacher",
+    roleTitle: "Class Adviser & Faculty",
+    email: "e.bautista@cnhs.edu.ph",
+    department: "English Department (Junior High)",
+    avatar: "EB",
+    assignedGrade: "Grade 7",
+    assignedSection: "Ramon",
+    assignedRoom: "Bldg A - Room 101",
+    totalLearners: 45,
+    subjects: ["English 7", "Homeroom Guidance 7"],
+  },
+  teacherScience: {
+    id: "USR-004",
+    name: "Mr. Roberto Cruz",
+    role: "Teacher",
+    roleTitle: "Class Adviser & Faculty",
+    email: "r.cruz@cnhs.edu.ph",
+    department: "Science Department (Junior High)",
+    avatar: "RC",
+    assignedGrade: "Grade 7",
+    assignedSection: "Quezon",
+    assignedRoom: "Bldg A - Room 102",
+    totalLearners: 44,
+    subjects: ["Science 7", "Homeroom Guidance 7"],
+  },
+};
+
+export const TEACHER_ADVISORY_STUDENTS = [
+  { id: "LRN-100291", lrn: "100291080011", name: "Alcantara, Mark Joseph D.", gender: "Male", generalAverage: 89, attendance: "Present", remarks: "Promoted / Good Standing" },
+  { id: "LRN-100292", lrn: "100291080012", name: "Bernardo, Angela Nicole M.", gender: "Female", generalAverage: 92, attendance: "Present", remarks: "With Honors" },
+  { id: "LRN-100293", lrn: "100291080013", name: "Castro, Christian Dave B.", gender: "Male", generalAverage: 87, attendance: "Present", remarks: "Promoted / Good Standing" },
+  { id: "LRN-100294", lrn: "100291080014", name: "Cruz, Princess Nicole C.", gender: "Female", generalAverage: 94, attendance: "Present", remarks: "With High Honors" },
+  { id: "LRN-100295", lrn: "100291080015", name: "Dela Rosa, Gabriel A.", gender: "Male", generalAverage: 84, attendance: "Present", remarks: "Satisfactory" },
+  { id: "LRN-100296", lrn: "100291080016", name: "Espiritu, Sofia Marie T.", gender: "Female", generalAverage: 91, attendance: "Absent", remarks: "Excuse Slip Submitted" },
+  { id: "LRN-100297", lrn: "100291080017", name: "Flores, John Patrick R.", gender: "Male", generalAverage: 88, attendance: "Present", remarks: "Promoted / Good Standing" },
+  { id: "LRN-100298", lrn: "100291080018", name: "Garcia, Hannah Mae L.", gender: "Female", generalAverage: 90, attendance: "Present", remarks: "With Honors" },
+  { id: "LRN-100299", lrn: "100291080019", name: "Hernandez, Kevin Joshua S.", gender: "Male", generalAverage: 86, attendance: "Present", remarks: "Promoted / Good Standing" },
+  { id: "LRN-100300", lrn: "100291080020", name: "Manalo, Janelle Louise P.", gender: "Female", generalAverage: 93, attendance: "Present", remarks: "With Honors" },
+];
+

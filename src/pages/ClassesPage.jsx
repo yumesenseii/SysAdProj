@@ -3,14 +3,17 @@ import {
   Plus,
   Users,
   Eye,
+  GraduationCap,
 } from 'lucide-react';
 import DataTable from '../components/DataTable';
 import StatusBadge from '../components/StatusBadge';
 import Button from '../components/Button';
 import Modal from '../components/Modal';
 import { INITIAL_CLASSES } from '../data/mockData';
+import { useAuth } from '../context/useAuth';
 
 export function ClassesPage() {
+  const { currentUser, isTeacher } = useAuth();
   const [classesList, setClassesList] = useState(INITIAL_CLASSES);
   const [searchQuery, setSearchQuery] = useState('');
   const [gradeFilter, setGradeFilter] = useState('ALL');
@@ -154,19 +157,41 @@ export function ClassesPage() {
     <div>
       <div className="page-header">
         <div className="page-header-title">
-          <h2>Classes & Sections</h2>
+          <h2>{isTeacher ? 'My Advisory & School Sections' : 'Classes & Sections'}</h2>
           <p>
-            Junior High School grade level sections, assigned class advisers, and learner counts.
+            {isTeacher
+              ? `Advisory assignment for ${currentUser?.name || 'Mrs. Evelyn Bautista'} (Section ${currentUser?.assignedSection || 'Ramon'}) and school roster.`
+              : 'Junior High School grade level sections, assigned class advisers, and learner counts.'}
           </p>
         </div>
         <div className="page-header-actions">
-          <Button
-            variant="primary"
-            icon={Plus}
-            onClick={() => setIsAddOpen(true)}
-          >
-            Add New Section
-          </Button>
+          {isTeacher ? (
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 14px',
+                borderRadius: '6px',
+                backgroundColor: '#eff6ff',
+                border: '1px solid #bfdbfe',
+                color: '#1d4ed8',
+                fontSize: '12.5px',
+                fontWeight: 600,
+              }}
+            >
+              <GraduationCap size={16} />
+              <span>Assigned Section: {currentUser?.assignedGrade || 'Grade 7'} – {currentUser?.assignedSection || 'Ramon'}</span>
+            </div>
+          ) : (
+            <Button
+              variant="primary"
+              icon={Plus}
+              onClick={() => setIsAddOpen(true)}
+            >
+              Add New Section
+            </Button>
+          )}
         </div>
       </div>
 
